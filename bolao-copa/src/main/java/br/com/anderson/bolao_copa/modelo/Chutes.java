@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
@@ -17,5 +19,9 @@ public class Chutes {
 	private String time1;
 	private String time2;
 	private String resultado;
+	
+	@ManyToOne
+	@JoinColumn(name="palpite_id")
+	private Palpites palpite;
 	
 }

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.7.18</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.anderson</groupId>
 	<artifactId>bolao-copa</artifactId>
@@ -59,10 +60,84 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Swagger -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-ui</artifactId>
+			<version>1.7.0</version> <!-- Substitua pela versão mais recente -->
+		</dependency>
 	</dependencies>
 
 	<build>
+		<finalName>bolao-copa</finalName>
 		<plugins>
+			    <!-- Plugin para executar comandos do npm -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.6.0</version>
+            <executions>
+                <!-- Executa 'npm install' para baixar as dependências -->
+                <execution>
+                    <id>npm-install</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>npm</executable>
+                        <workingDirectory>src/main/angular</workingDirectory> <!-- Ajuste para o caminho do seu projeto Angular -->
+                        <arguments>
+                            <argument>install</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                
+                <!-- Executa 'npm run build' para compilar o Angular -->
+                <execution>
+                    <id>npm-build</id>
+                    <phase>generate-sources</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>npm</executable>
+                        <workingDirectory>src/main/angular</workingDirectory> <!-- Ajuste para o caminho do seu projeto Angular -->
+                        <arguments>
+                            <argument>run</argument>
+                            <argument>build</argument>
+                            <argument>--prod</argument> <!-- Build de produção -->
+                        </arguments>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        
+        <!-- Plugin para copiar os arquivos compilados do Angular -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.6</version>
+            <executions>
+                <execution>
+                    <id>copy-angular-build</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                        <outputDirectory>${project.build.outputDirectory}/static</outputDirectory> <!-- Ajuste conforme seu backend -->
+                        <resources>          
+                            <resource>
+                                <directory>src/main/angular/dist/nome-do-seu-projeto</directory>
+                                <filtering>false</filtering>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+			
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
